@@ -2,8 +2,6 @@
 # Supported instrs: 
 # addi, sub, beq, ori, sw
 
-
-
 def sim(program):
     finished = False      # Is the simulation finished? 
     PC = 0                # Program Counter
@@ -11,6 +9,8 @@ def sim(program):
     mem = [0] * 12288     # Let's initialize 0x3000 or 12288 spaces in memory. I know this is inefficient...
                           # But my machine has 16GB of RAM, its ok :)
     DIC = 0               # Dynamic Instr Count
+    high = register[30]
+    low = register[31]
     while(not(finished)):
         if PC == len(program) - 4: 
             finished = True
@@ -40,6 +40,76 @@ def sim(program):
             if register[s] == register[t]:
                 PC += imm*4
         
+        elif fetch[0:6] == '000000' and fetch[21:32] == '00000100000': # ADD
+            PC += 4
+            s = int(fetch[6:11],2)
+            t = int(fetch[11:16],2)
+            d = int(fetch[16:21],2)
+            register[d] = register[s] + register[t]
+
+        elif fetch[0:6] == '000000' and fetch[21:32] == '00000100001': # ADDU
+            PC += 4
+            s = int(fetch[6:11],2)
+            t = int(fetch[11:16],2)
+            d = int(fetch[16:21],2)
+            register[d] = register[s] + register[t]
+
+        elif fetch[0:6] == '0001001' # ADDIU
+            PC += 4
+            s = int(fetch[6:11],2)
+            t = int(fetch[11:16],2)
+            imm = int(fetch[16:],2)
+            register[t] = register[s] + imm
+            
+
+        elif fetch[0:6] == '000000' and fetch[21:32] == '000000100011': # SUBU
+            PC += 4
+            s = int(fetch[6:11],2)
+            t = int(fetch[11:16],2)
+            d = int(fetch[16:21],2)
+            register[d] = register[s] - register[t]
+
+        elif fetch[0:6] == '000000' and fetch[21:32] == '0000011000': # MULT
+            PC += 4
+            s = int(fetch[6:11],2)
+            t = int(fetch[11:16],2)
+            low = register[s] * register[t]
+           
+
+        elif fetch[0:6] == '000000' and fetch[21:32] == '0000011001': # MULTU
+            PC += 4
+            s = int(fetch[6:11],2)
+            t = int(fetch[11:16],2)
+            low = register[s] * register[t]
+           
+        elif fetch[0:6] == '000000' and fetch[21:32] == '0000010000': # MFHI
+            PC += 4
+            d = int(fetch[16:21],2)
+            register[d] = high
+
+        elif fetch[0:6] == '000000' and fetch[21:32] == '0000100010': # MFLO
+            PC += 4
+            d = int(fetch[16:21],2)
+            register[d] = low
+
+        elif fetch[0:6] == '000000' and fetch[21:32] == '0000011010': # DIV
+            PC += 4
+            s = int(fetch[6:11],2)
+            t = int(fetch[11:16],2)
+            low = register[s] / register[t]
+            high = register[s] % register[t]
+            
+         elif fetch[0:6] == '000000' and fetch[21:32] == '0000011011': # DIVU
+            PC += 4
+            s = int(fetch[6:11],2)
+            t = int(fetch[11:16],2)
+            low = register[s] / register[t]
+            high = register[s] % register[t]
+
+        elif fetch[0:6] == '0000010' # Jump
+            
+
+
         elif fetch[0:6] == '001101':   # ORI
             PC += 4
             s = int(fetch[6:11],2)
