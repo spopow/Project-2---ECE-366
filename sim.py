@@ -113,6 +113,117 @@ def sim(program):
             imm = int(fetch[16:],2)
             register[t] = register[s] | imm
 
+         elif fetch[0:6] == '001110': # XORI
+            PC += 4
+            s = int(fetch[6:11],2)
+            t = int(fetch[11:16],2)
+            imm = int(fetch[16:],2)
+            register[t] = register[s] ^ imm
+
+        elif fetch[0:6] == '000000' and fetch[21:32] == '00000101010': # SLT
+            PC += 4
+            s = int(fetch[6:11],2)
+            t = int(fetch[11:16],2)
+            d = int(fetch[16:21],2)
+            if register[s] < register[t]:
+                register[d] = 1
+            else:
+                register[d] = 0
+
+        elif fetch[0:6] == '000000' and fetch[21:32] == '00000101011': # SLTU
+            PC += 4
+            s = int(fetch[6:11],2)
+            t = int(fetch[11:16],2)
+            d = int(fetch[16:21],2)
+            if register[s] < register[t]:
+                register[d] = 1
+            else:
+                register[d] = 0
+
+        elif fetch[0:6] == '001010': # SLTI
+            PC += 4
+            s = int(fetch[6:11],2)
+            t = int(fetch[11:16],2)
+            imm = -(65536 - int(fetch[16:],2)) if fetch[16]=='1' else int(fetch[16:],2)
+            if register[s] < imm:
+                register[t] = 1
+            else:
+                register[t] = 0
+
+        elif fetch[0:6] == '001011': # SLTIU
+            PC += 4
+            s = int(fetch[6:11],2)
+            t = int(fetch[11:16],2)
+            imm = int(fetch[16:],2)
+            if register[s] < imm:
+                register[t] = 1
+            else:
+                register[t] = 0
+        
+        elif fetch[0:6] == '001111': # LUI
+            PC += 4
+            t = int(fetch[11:16],2)
+            imm = int(fetch[16:],2)
+            register[t] = imm << 16
+
+        elif fetch[0:6] == '100000': # LB
+            PC += 4
+            s = int(fetch[6:11],2)
+            t = int(fetch[11:16],2)
+            offset = -(65536 - int(fetch[16:],2)) if fetch[16]=='1' else int(fetch[16:],2)
+            offset = offset + register[s]
+            register[t] = mem[offset]
+
+        elif fetch[0:6] == '100100': # LBU
+            PC += 4
+            s = int(fetch[6:11],2)
+            t = int(fetch[11:16],2)
+            offset = int(fetch[16:],2)
+            offset = offset + register[s]
+            andbyte = 0xFF
+            register[t] = (mem[offset]  & andbyte)
+
+        elif fetch[0:6] == '100001': # LH
+            PC += 4
+            s = int(fetch[6:11],2)
+            t = int(fetch[11:16],2)
+            offset = -(65536 - int(fetch[16:],2)) if fetch[16]=='1' else int(fetch[16:],2)
+            offset = offset + register[s]
+            register[t] = mem[offset]
+
+        elif fetch[0:6] == '100101': # LHU
+            PC += 4
+            s = int(fetch[6:11],2)
+            t = int(fetch[11:16],2)
+            offset = int(fetch[16:],2)
+            offset = offset + register[s]
+            andbyte = 0xFFFF
+            register[t] = (mem[offset]  & andbyte)
+
+        elif fetch[0:6] == '100011': # LW
+            PC += 4
+            s = int(fetch[6:11],2)
+            t = int(fetch[11:16],2)
+            offset = -(65536 - int(fetch[16:],2)) if fetch[16]=='1' else int(fetch[16:],2)
+            offset = offset + register[s]
+            register[t] = mem(offset)
+
+        elif fetch[0:6] == '101000': # SB
+            PC += 4
+            s = int(fetch[6:11],2)
+            t = int(fetch[11:16],2)
+            offset = -(65536 - int(fetch[16:],2)) if fetch[16]=='1' else int(fetch[16:],2)
+            offset = offset + register[s]
+            mem[offset] = register[t]
+
+        elif fetch[0:6] == '101001': # SH
+            PC += 4
+            s = int(fetch[6:11],2)
+            t = int(fetch[11:16],2)
+            offset = -(65536 - int(fetch[16:],2)) if fetch[16]=='1' else int(fetch[16:],2)
+            offset = offset + register[s]
+            mem[offset] = register[t]
+
         elif fetch[0:6] == '101011':  # SW
             PC += 4
             s = int(fetch[6:11],2)
