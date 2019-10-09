@@ -45,7 +45,7 @@ def sim(program):
             s = int(fetch[6:11],2)
             t = int(fetch[11:16],2)
             d = int(fetch[16:21],2)
-            register[d] = register[s] & register[t]
+            register[d] = (register[s] & register[t])
         
         elif fetch[0:6] == '000000' and fetch[21:32] == '00000100101': # OR
             PC += 4
@@ -87,6 +87,51 @@ def sim(program):
             t = int(fetch[11:16],2)
             imm = int(fetch[16:],2)
             register[t] = register[s] ^ imm
+
+        elif fetch[0:6] == '000000' and fetch[26:32] == '000000': # SLL
+            PC += 4
+            s = int(fetch[6:11],2)
+            t = int(fetch[11:16],2)
+            d = int(fetch[16:21],2)
+            h = int(fetch[21:26],2)
+            register[d] = register[t] << h   
+
+        elif fetch[0:6] == '000000' and fetch[26:32] == '000010': # SRL
+            PC += 4
+            s = int(fetch[6:11],2)
+            t = int(fetch[11:16],2)
+            d = int(fetch[16:21],2)
+            h = int(fetch[21:26],2)
+            register[d] = register[t] >> h
+
+        elif fetch[0:6] == '000000' and fetch[26:32] == '000011': # SRA
+            PC += 4
+            s = int(fetch[6:11],2)
+            t = int(fetch[11:16],2)
+            d = int(fetch[16:21],2)
+            h = int(fetch[21:26],2)
+            register[d] = register[t] >> h
+
+        elif fetch[0:6] == '000000' and fetch[26:32] == '000100': # SLLV
+            PC += 4
+            s = int(fetch[6:11],2)
+            t = int(fetch[11:16],2)
+            d = int(fetch[16:21],2)
+            register[d] = register[t] << register[s]
+
+        elif fetch[0:6] == '000000' and fetch[21:32] == '00000000110': # SRLV
+            PC += 4
+            s = int(fetch[6:11],2)
+            t = int(fetch[11:16],2)
+            d = int(fetch[16:21],2)
+            register[d] = register[t] >> register[s]
+
+        elif fetch[0:6] == '000000' and fetch[26:32] == '000111': # SRAV
+            PC += 4
+            s = int(fetch[6:11],2)
+            t = int(fetch[11:16],2)
+            d = int(fetch[16:21],2)
+            register[d] = register[t] >> register[s]
 
         elif fetch[0:6] == '000000' and fetch[21:32] == '00000101010': # SLT
             PC += 4
@@ -174,7 +219,7 @@ def sim(program):
             t = int(fetch[11:16],2)
             offset = -(65536 - int(fetch[16:],2)) if fetch[16]=='1' else int(fetch[16:],2)
             offset = offset + register[s]
-            register[t] = mem(offset)
+            register[t] = mem[offset]
 
         elif fetch[0:6] == '101000': # SB
             PC += 4
@@ -206,7 +251,7 @@ def sim(program):
 
     # Finished simulations. Let's print out some stats
     print('***Simulation finished***')
-    print('Registers $8 - $23 ', register[8:23])
+    print('Registers $8 - $23 ', register[6:24])
     print('Dynamic Instr Count ', DIC)
     print('Memory contents 0x2000 - 0x2050 ', mem[8192:8272])
 
