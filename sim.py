@@ -54,61 +54,57 @@ def sim(program):
             d = int(fetch[16:21],2)
             register[d] = register[s] + register[t]
 
-        elif fetch[0:6] == '0001001' # ADDIU
+        elif fetch[0:6] == '001001': # ADDIU
             PC += 4
             s = int(fetch[6:11],2)
             t = int(fetch[11:16],2)
             imm = int(fetch[16:],2)
             register[t] = register[s] + imm
             
-
-        elif fetch[0:6] == '000000' and fetch[21:32] == '000000100011': # SUBU
+        elif fetch[0:6] == '000000' and fetch[21:32] == '00000100011': # SUBU
             PC += 4
             s = int(fetch[6:11],2)
             t = int(fetch[11:16],2)
             d = int(fetch[16:21],2)
             register[d] = register[s] - register[t]
 
-        elif fetch[0:6] == '000000' and fetch[21:32] == '0000011000': # MULT
+        elif fetch[0:6] == '000000' and fetch[21:32] == '00000011000': # MULT
             PC += 4
             s = int(fetch[6:11],2)
             t = int(fetch[11:16],2)
             low = register[s] * register[t]
            
-
-        elif fetch[0:6] == '000000' and fetch[21:32] == '0000011001': # MULTU
+        elif fetch[0:6] == '000000' and fetch[21:32] == '00000011001': # MULTU
             PC += 4
             s = int(fetch[6:11],2)
             t = int(fetch[11:16],2)
             low = register[s] * register[t]
            
-        elif fetch[0:6] == '000000' and fetch[21:32] == '0000010000': # MFHI
+        elif fetch[0:6] == '000000' and fetch[21:32] == '00000010000': # MFHI
             PC += 4
             d = int(fetch[16:21],2)
             register[d] = high
 
-        elif fetch[0:6] == '000000' and fetch[21:32] == '0000100010': # MFLO
+        elif fetch[0:6] == '000000' and fetch[21:32] == '00000010010': # MFLO
             PC += 4
             d = int(fetch[16:21],2)
             register[d] = low
 
-        elif fetch[0:6] == '000000' and fetch[21:32] == '0000011010': # DIV
+        elif fetch[0:6] == '000000' and fetch[21:32] == '00000011010': # DIV
             PC += 4
             s = int(fetch[6:11],2)
             t = int(fetch[11:16],2)
             low = register[s] / register[t]
             high = register[s] % register[t]
             
-         elif fetch[0:6] == '000000' and fetch[21:32] == '0000011011': # DIVU
+        elif fetch[0:6] == '000000' and fetch[21:32] == '00000011011': # DIVU
             PC += 4
             s = int(fetch[6:11],2)
             t = int(fetch[11:16],2)
             low = register[s] / register[t]
             high = register[s] % register[t]
 
-        elif fetch[0:6] == '0000010' # Jump
-            
-
+        #elif fetch[0:6] == '0000010' # Jump
 
         elif fetch[0:6] == '001101':   # ORI
             PC += 4
