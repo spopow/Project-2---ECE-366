@@ -96,7 +96,7 @@ def sim(program):
             t = int(fetch[11:16],2)
             low = register[s] / register[t]
             high = register[s] % register[t]
-            
+
         elif fetch[0:6] == '000100':  # BEQ
             PC += 4
             s = int(fetch[6:11],2)
@@ -178,7 +178,7 @@ def sim(program):
             h = int(fetch[21:26],2)
             register[d] = register[t] >> h
 
-        elif fetch[0:6] == '000000' and fetch[26:32] == '000100': # SLLV
+        elif fetch[0:6] == '000000' and fetch[26:32] == '000100': # SLLV test
             PC += 4
             s = int(fetch[6:11],2)
             t = int(fetch[11:16],2)
